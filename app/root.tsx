@@ -11,6 +11,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import { getHints } from "./utils/client-hints";
+import styles from "./tailwind.css";
 
 export async function loader({ request }: DataFunctionArgs) {
   return json({
@@ -23,6 +24,7 @@ export async function loader({ request }: DataFunctionArgs) {
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "stylesheet", href: styles },
 ];
 
 export default function App() {
@@ -30,7 +32,7 @@ export default function App() {
 
   console.log(requestInfo.hints);
   return (
-    <html lang="en">
+    <html lang="en" className={requestInfo?.hints?.theme}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
