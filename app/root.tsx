@@ -1,6 +1,10 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
-import { json } from "@remix-run/node";
-import type { DataFunctionArgs, LinksFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  DataFunctionArgs,
+  LinksFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -10,7 +14,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { getHints } from "./utils/client-hints";
+import { ClientHintCheck, getHints } from "./utils/client-hints";
 import styles from "./tailwind.css";
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -18,6 +22,29 @@ export async function loader({ request }: DataFunctionArgs) {
     // other stuff here...
     requestInfo: {
       hints: getHints(request),
+      userPrefs: {
+        theme: getTheme(request),
+      },
+    },
+  });
+}
+
+export function getTheme(request: Request) {
+  const cookieHeader = request.headers.get("cookie");
+  const parsed = cookieHeader
+    ?.split("; ")
+    .find((c) => c.startsWith("theme="))
+    ?.split("=")[1];
+  if (parsed === "light" || parsed === "dark") return parsed;
+  return null;
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": `theme=${
+        request.headers.get("Cookie")?.includes("theme=dark") ? "light" : "dark"
+      }; Path=/; HttpOnly; SameSite=Lax`,
     },
   });
 }
@@ -32,8 +59,12 @@ export default function App() {
 
   console.log(requestInfo.hints);
   return (
-    <html lang="en" className={requestInfo?.hints?.theme}>
+    <html
+      lang="en"
+      className={requestInfo?.userPrefs.theme ?? requestInfo?.hints?.theme}
+    >
       <head>
+        <ClientHintCheck nonce={requestInfo.nonce} />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />

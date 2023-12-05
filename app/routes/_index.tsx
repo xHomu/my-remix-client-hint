@@ -1,4 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
+import { Form } from "@remix-run/react";
+import { useHints } from "~/utils/client-hints";
 
 export const meta: MetaFunction = () => {
   return [
@@ -8,6 +10,10 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const hints = useHints();
+
+  console.log(hints);
+
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <h1 className="text-blue-500 dark:text-red-500">Welcome to Remix</h1>
@@ -36,6 +42,16 @@ export default function Index() {
           </a>
         </li>
       </ul>
+      <Form method="post" action="/">
+        <input
+          type="hidden"
+          name="theme"
+          value={hints?.theme === "dark" ? "light" : "dark"}
+        />
+        <button type="submit">
+          Toggle Theme: currently {hints?.userPrefs.theme ?? hints?.theme}
+        </button>
+      </Form>
     </div>
   );
 }
