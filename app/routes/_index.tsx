@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, useRouteLoaderData } from "@remix-run/react";
 import { useHints } from "~/utils/client-hints";
+import type { loader as rootLoader } from "../root";
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,9 +11,9 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const hints = useHints();
+  const data = useRouteLoaderData<typeof rootLoader>("root");
 
-  console.log(hints);
+  console.log(data);
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
@@ -46,10 +47,14 @@ export default function Index() {
         <input
           type="hidden"
           name="theme"
-          value={hints?.theme === "dark" ? "light" : "dark"}
+          value={
+            data?.userPrefs.theme ?? data?.hints?.theme === "dark"
+              ? "light"
+              : "dark"
+          }
         />
         <button type="submit">
-          Toggle Theme: currently {hints?.userPrefs.theme ?? hints?.theme}
+          Toggle Theme: currently {data?.userPrefs.theme ?? data?.hints?.theme}
         </button>
       </Form>
     </div>

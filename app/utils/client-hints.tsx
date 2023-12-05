@@ -24,10 +24,10 @@ export const { getHints } = hintsUtils;
 /**
  * @returns an object with the client hints and their values
  */
-export function useHints() {
-  const requestInfo = useRouteLoaderData<typeof rootLoader>("root");
-  return requestInfo?.hints;
-}
+// export function useHints() {
+//   const data = useRouteLoaderData<typeof rootLoader>("root");
+//   return data?.requestInfo?.hints;
+// }
 
 /**
  * @returns inline script element that checks for client hints and sets cookies
