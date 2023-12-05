@@ -11,9 +11,9 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const data = useRouteLoaderData<typeof rootLoader>("root");
+  const { requestInfo } = useRouteLoaderData<typeof rootLoader>("root");
 
-  console.log(data);
+  console.log(requestInfo);
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
@@ -48,13 +48,15 @@ export default function Index() {
           type="hidden"
           name="theme"
           value={
-            data?.userPrefs.theme ?? data?.hints?.theme === "dark"
+            requestInfo?.userPrefs?.theme ??
+            requestInfo?.hints?.theme === "dark"
               ? "light"
               : "dark"
           }
         />
         <button type="submit">
-          Toggle Theme: currently {data?.userPrefs.theme ?? data?.hints?.theme}
+          Toggle Theme: currently{" "}
+          {requestInfo?.userPrefs?.theme ?? requestInfo?.hints?.theme}
         </button>
       </Form>
     </div>
